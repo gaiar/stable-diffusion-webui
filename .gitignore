@@ -33,6 +33,7 @@ notification.mp3
 /test/stdout.txt
 /test/stderr.txt
 /cache.json*
+/cache/
 /config_states/
 /node_modules
 /package-lock.json
