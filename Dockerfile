@@ -30,17 +30,29 @@ RUN git clone --depth 1 https://github.com/gaiar/stable-diffusion-webui.git . \
 
 # Clone required repositories from working mirrors
 # Note: Stability-AI/stablediffusion is no longer available, using w-e-w fork
+# Using specific commits for compatibility
 RUN mkdir -p repositories && \
-    git clone --depth 1 https://github.com/w-e-w/stablediffusion.git \
+    git clone https://github.com/w-e-w/stablediffusion.git \
         repositories/stable-diffusion-stability-ai && \
-    git clone --depth 1 https://github.com/Stability-AI/generative-models.git \
+    cd repositories/stable-diffusion-stability-ai && \
+    git checkout cf1d67a6fd5ea1aa600c4df58e5b47da45f6bdbf && \
+    cd /app && \
+    git clone https://github.com/Stability-AI/generative-models.git \
         repositories/generative-models && \
-    git clone --depth 1 https://github.com/crowsonkb/k-diffusion.git \
+    git clone https://github.com/crowsonkb/k-diffusion.git \
         repositories/k-diffusion && \
-    git clone --depth 1 https://github.com/sczhou/CodeFormer.git \
+    cd repositories/k-diffusion && \
+    git checkout ab527a9a6d347f364e3d185ba6d714e22d80cb3c && \
+    cd /app && \
+    git clone https://github.com/sczhou/CodeFormer.git \
         repositories/CodeFormer && \
-    git clone --depth 1 https://github.com/salesforce/BLIP.git \
-        repositories/BLIP
+    cd repositories/CodeFormer && \
+    git checkout c5b4593074ba6214284d6acd5f1719b6c5d739af && \
+    cd /app && \
+    git clone https://github.com/salesforce/BLIP.git \
+        repositories/BLIP && \
+    cd repositories/BLIP && \
+    git checkout 48211a1594f1321b00f14c9f7a5b4813144b2fb9
 
 # Install PyTorch CPU-only (version 2.1.2 for torchvision compatibility)
 RUN pip install --no-cache-dir \
@@ -57,6 +69,9 @@ RUN pip install --no-cache-dir \
 
 # Install requirements (torchsde already fixed to 0.2.6 in requirements_versions.txt)
 RUN pip install --no-cache-dir -r requirements_versions.txt
+
+# Install CLIP (required by k-diffusion)
+RUN pip install --no-cache-dir git+https://github.com/openai/CLIP.git
 
 # Install additional dependencies for repositories
 RUN pip install --no-cache-dir \
