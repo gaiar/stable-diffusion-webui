@@ -1,0 +1,60 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+
+# IDE
+.vscode
+.idea
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Models and outputs (mount as volumes instead)
+models/
+outputs/
+cache/
+
+# Logs
+*.log
+log/
+
+# Temporary files
+tmp/
+*.tmp
+*.swp
+
+# Documentation (not needed in image)
+*.md
+!requirements*.txt
+
+# Test files
+test/
+tests/
+*.test.py
+
+# Config files (user-specific)
+config.json
+ui-config.json
+styles.csv
+params.txt
+
+# Extensions (user can mount these)
+extensions/
+
+# Embeddings (user can mount these)
+embeddings/
+
+# Repositories (will be cloned fresh in Docker)
+repositories/

@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  sd-openvino:
+    image: ghcr.io/gaiar/sd-openvino:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sd-openvino
+    ports:
+      - "7860:7860"
+    volumes:
+      # Model storage (required - add your .safetensors or .ckpt files here)
+      - ./models:/app/models
+      # Output images
+      - ./outputs:/app/outputs
+      # OpenVINO model cache (speeds up subsequent runs)
+      - ./cache:/app/cache
+    environment:
+      # Intel CPU threading optimizations
+      - OMP_NUM_THREADS=8
+      - MKL_NUM_THREADS=8
+      - OPENBLAS_NUM_THREADS=8
+      - NUMEXPR_MAX_THREADS=8
+      # OpenVINO settings
+      - PYTORCH_TRACING_MODE=TORCHFX
+      - DNNL_PRIMITIVE_CACHE_CAPACITY=1024
+    restart: unless-stopped
+    # Memory limit (adjust based on your system)
+    # For 512x512 generation, 8GB is usually sufficient
+    # For larger images or batch processing, increase accordingly
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:7860/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 120s
+      retries: 3

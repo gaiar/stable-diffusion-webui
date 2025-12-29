@@ -175,6 +175,72 @@ Models stored in: `/home/gaiar/developer/sd-openvino/models/Stable-diffusion/`
 
 **Result:** ~13% faster than Docker setup, ~33% faster than PyTorch baseline
 
+## Docker Usage
+
+### Quick Start with Docker
+
+```bash
+# Pull the pre-built image
+docker pull ghcr.io/gaiar/sd-openvino:latest
+
+# Create directories for models and outputs
+mkdir -p models outputs cache
+
+# Download a model (e.g., SD 1.5)
+# Place your .safetensors or .ckpt files in ./models/Stable-diffusion/
+
+# Run with docker-compose
+docker-compose up -d
+
+# Or run directly
+docker run -d \
+  -p 7860:7860 \
+  -v ./models:/app/models \
+  -v ./outputs:/app/outputs \
+  -v ./cache:/app/cache \
+  ghcr.io/gaiar/sd-openvino:latest
+```
+
+### Build Locally
+
+```bash
+# Clone the repository
+git clone https://github.com/gaiar/stable-diffusion-webui.git
+cd stable-diffusion-webui
+
+# Build the image
+docker build -t sd-openvino .
+
+# Run
+docker-compose up -d
+```
+
+### Docker Image Details
+
+- **Base:** Python 3.10 slim (Debian Bookworm)
+- **Size:** ~8GB (includes PyTorch, OpenVINO, all dependencies)
+- **Repositories:** Pre-cloned from working mirrors
+  - `w-e-w/stablediffusion` (mirror of unavailable Stability-AI/stablediffusion)
+  - `Stability-AI/generative-models`
+  - `crowsonkb/k-diffusion`
+  - `sczhou/CodeFormer`
+  - `salesforce/BLIP`
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| OMP_NUM_THREADS | 8 | OpenMP threads |
+| MKL_NUM_THREADS | 8 | Intel MKL threads |
+| PYTORCH_TRACING_MODE | TORCHFX | Required for OpenVINO |
+| DNNL_PRIMITIVE_CACHE_CAPACITY | 1024 | oneDNN cache size |
+
+## GitHub Repository
+
+- **Fork:** https://github.com/gaiar/stable-diffusion-webui
+- **Upstream:** https://github.com/openvinotoolkit/stable-diffusion-webui
+- **Docker Image:** ghcr.io/gaiar/sd-openvino:latest
+
 ## Notes
 
 - First generation with OpenVINO has ~50s compilation overhead
